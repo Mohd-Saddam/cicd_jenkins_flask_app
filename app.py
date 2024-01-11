@@ -57,7 +57,7 @@ def delete_item_from_db(key):
     
 @app.route('/')
 def hello():
-    return "Testing Jenkins with webhook"
+    return "Testing Jenkins with webhook for github"
     
 @app.route('/items', methods=['GET'])
 def get_all_items():
