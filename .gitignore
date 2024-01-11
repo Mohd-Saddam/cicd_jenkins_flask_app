@@ -1,0 +1,4 @@
+env/
+item.db
+.DS_Store
+.dockerignore
