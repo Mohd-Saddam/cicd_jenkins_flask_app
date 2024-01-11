@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+     environment {
+        IMAGE_NAME = 'saddam0919python/myflaskapp'
+        IMAGE_TAG = "${IMAGE_NAME}:${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Mohd-Saddam/cicd_jenkins_flask_app.git'
+                sh "ls -ltr"
+            }
+        }
+        stage('Install Lib ') {
+            steps {
+                sh "pip install -r requirements.txt"
+            }
+        }
+        stage('Running Testcases') {
+            steps {
+                sh "pytest test.py"
+                echo "test case has run successfully"
+            }
+        }
+        stage('Login to docker hub') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhubpwd', variable: 'dockerhubpwd')]) {
+                sh 'docker login -u saddam0919python -p ${dockerhubpwd}'}
+                echo 'Login successfully'
+            }
+        }
+        
+         stage('Build Docker Image')
+        {
+            steps
+            {
+                sh 'docker build -t ${IMAGE_TAG} .'
+                echo "Docker image build successfully"
+                sh "docker images"
+            }
+        }
+        
+        stage('Push Docker Images')
+        {
+            steps
+            {
+                sh 'docker stop $(docker ps -q)'
+                sh 'docker rmi $(docker images -q)'
+                sh 'docker push ${IMAGE_TAG}'
+                sh 'docker run --name app_saddam -itd -p 5001:5001  ${IMAGE_TAG}'
+                echo "Docker image push successfully"
+            }
+           
+        }
+       
+    }
+}
