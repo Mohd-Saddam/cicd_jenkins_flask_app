@@ -42,13 +42,13 @@ pipeline {
             }
         }
         
-        stage('Push Docker Images')
+        
+        stage('Push Docker Image')
         {
             steps
             {
-                sh 'docker stop $(docker ps -q)'
-                sh 'docker rmi $(docker images -q)'
                 sh 'docker push ${IMAGE_TAG}'
+                sh 'docker rm -f app_saddam'
                 sh 'docker run --name app_saddam -itd -p 5001:5001  ${IMAGE_TAG}'
                 echo "Docker image push successfully"
             }
